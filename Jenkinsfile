@@ -36,7 +36,7 @@ pipeline {
                     def lambdaFunctionName = "trigger-api"
                     def invokeCommand = """
                     aws lambda invoke --function-name ${lambdaFunctionName} --region ${AWS_REGION} \
-                    --payload '{ "subnet_id": "subnet-xyz", "full_name": "Anurag Dangi", "email": "your.email@example.com" }' response.json
+                    --payload '{ "subnet_id": "subnet-xyz", "full_name": "Anurag Dangi", "email": "anurag.suraj23@gmail.com" }' response.json
                     cat response.json
                     """
                     sh invokeCommand
