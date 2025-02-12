@@ -1,15 +1,18 @@
-resource "aws_lambda_function" "my_lambda" {
-  function_name    = "my-lambda-function"
-  role            = aws_iam_role.lambda_exec.arn
-  handler         = "lambda_function.lambda_handler"
-  runtime         = "python3.8"
-  timeout         = 30
+resource "aws_lambda_function" "lambda" {
+  function_name = "MyLambdaFunction"
+  filename      = "lambda_payload.zip"
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.9"
+  role          = data.aws_iam_role.lambda.arn
 
-  filename        = "lambda_payload.zip"
+  vpc_config {
+    subnet_ids         = [data.aws_subnet.private_subnet.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
 
   environment {
     variables = {
-      API_URL = "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data"
+      SUBNET_ID = data.aws_subnet.private_subnet.id
     }
   }
 }
