@@ -1,13 +1,12 @@
-# Terraform Files
+# Terraform State
 *.tfstate
 *.tfstate.backup
-.terraform/
-.terraform.lock.hcl
 
-# Python Files
+# Ignore Python cache
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 
-# Zip Files
+# Ignore Lambda Package
 lambda_payload.zip
