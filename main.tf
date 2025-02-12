@@ -1,9 +1,13 @@
-data "aws_vpc" "vpc" {
-  id = var.vpc_id  # Fetching existing VPC using a variable
+provider "aws" {
+  region = "ap-south-1" # Don't change the region
 }
 
-data "aws_iam_role" "lambda" {
-  name = var.lambda_role_name  # Fetching IAM Role dynamically
+terraform {
+  backend "s3" {
+    bucket = "467.devops.candidate.exam"
+    key    = "terraform/state"
+    region = "ap-south-1"
+  }
 }
 
 resource "aws_security_group" "lambda_sg" {
@@ -45,10 +49,7 @@ resource "aws_lambda_function" "lambda_function" {
 
   environment {
     variables = {
-      API_URL       = "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data"
-      SUBNET_ID     = aws_subnet.private_subnet.id  # Pass subnet dynamically
-      FULL_NAME     = "Anurag Dangi"  # Replace with your name
-      EMAIL         = "anurag.suraj23@gmail.com"  # Replace with your email
+      API_URL = "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data"
     }
   }
 }
