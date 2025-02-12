@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/your-repo/your-terraform-project.git'
+                git 'https://github.com/anuragsuraj23/devops-exam.git'
             }
         }
 
