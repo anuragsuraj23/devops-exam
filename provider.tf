@@ -1,11 +1,12 @@
 terraform {
   backend "s3" {
     bucket         = "467.devops.candidate.exam"
-    key            = "terraform.tfstate"
+    key            = "terraform/state"
     region         = "ap-south-1"
+    encrypt        = true
   }
 }
 
 provider "aws" {
-  region  = "ap-south-1" 
+  region = "ap-south-1"
 }
