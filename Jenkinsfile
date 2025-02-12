@@ -1,49 +1,33 @@
 pipeline {
     agent any
-
     environment {
-        GITHUB_TOKEN = credentials('github-token')
+        AWS_REGION = 'ap-south-1'
     }
-
     stages {
-        stage('Checkout') {
+        stage('Init') {
             steps {
-                script {
-                    git branch: 'main',
-                        credentialsId: 'github-token',
-                        url: "https://github.com/anuragsuraj23/devops-exam.git"
-                }
+                sh 'terraform init -force-copy'
             }
         }
-
-        stage('Terraform Init & Apply') {
+        stage('Plan') {
             steps {
-                script {
-                    sh '''
-                    terraform init
-                    terraform plan -out=tfplan
-                    terraform apply -auto-approve tfplan
-                    '''
-                }
+                sh 'terraform plan -out=tfplan'
             }
         }
-
-        stage('Package Lambda') {
+        stage('Apply') {
             steps {
-                script {
-                    sh '''
-                    zip lambda_payload.zip lambda_function.py
-                    '''
-                }
+                sh 'terraform apply -auto-approve tfplan'
             }
         }
-
-        stage('Deploy Lambda') {
+        stage('Invoke Lambda') {
             steps {
                 script {
-                    sh '''
-                    aws lambda update-function-code --function-name my_lambda_function --zip-file fileb://lambda_payload.zip
-                    '''
+                    def lambda_response = sh(
+                        script: """aws lambda invoke --function-name trigger-api --payload '{ "subnet_id": "subnet-xyz", "full_name": "Anurag Dangi", "email": "your@email.com" }' response.json""",
+                        returnStdout: true
+                    )
+                    echo "Lambda Invocation Response: ${lambda_response}"
+                    sh 'cat response.json'
                 }
             }
         }
