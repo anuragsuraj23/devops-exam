@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "467.devops.candidate.exam"
-    key    = "terraform.tfstate"
+    key    = "terraform/state"
     region = "ap-south-1"
   }
 }
