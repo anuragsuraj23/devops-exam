@@ -1,15 +1,3 @@
-provider "aws" {
-  region = "ap-south-1" # Don't change the region
-}
-
-terraform {
-  backend "s3" {
-    bucket = "467.devops.candidate.exam"
-    key    = "terraform/state"
-    region = "ap-south-1"
-  }
-}
-
 resource "aws_security_group" "lambda_sg" {
   vpc_id = data.aws_vpc.vpc.id
 
