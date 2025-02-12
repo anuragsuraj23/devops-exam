@@ -3,7 +3,7 @@ import urllib3
 import os
 
 def lambda_handler(event, context):
-    url = os.environ.get("API_URL", "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data")
+    url = os.getenv("API_URL", "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data")
     headers = {
         "Content-Type": "application/json",
         "X-Siemens-Auth": "test"
