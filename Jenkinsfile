@@ -1,29 +1,34 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage("TF Init"){
-            steps{
-                echo "Executing Terraform Init"
+    environment {
+        AWS_REGION = 'ap-south-1'
+        S3_BUCKET  = '467.devops.candidate.exam'
+    }
+    stages {
+        stage("TF Init") {
+            steps {
+                sh 'terraform init -backend-config="bucket=${S3_BUCKET}" -backend-config="region=${AWS_REGION}"'
             }
         }
-        stage("TF Validate"){
-            steps{
-                echo "Validating Terraform Code"
+        stage("TF Validate") {
+            steps {
+                sh 'terraform validate'
             }
         }
-        stage("TF Plan"){
-            steps{
-                echo "Executing Terraform Plan"
+        stage("TF Plan") {
+            steps {
+                sh 'terraform plan'
             }
         }
-        stage("TF Apply"){
-            steps{
-                echo "Executing Terraform Apply"
+        stage("TF Apply") {
+            steps {
+                sh 'terraform apply -auto-approve'
             }
         }
-        stage("Invoke Lambda"){
-            steps{
-                echo "Invoking your AWS Lambda"
+        stage("Invoke Lambda") {
+            steps {
+                sh 'aws lambda invoke --function-name trigger-api-function response.json'
+                sh 'cat response.json'
             }
         }
     }
