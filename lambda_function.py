@@ -1,22 +1,20 @@
 import json
 import requests
-import boto3
 
 def lambda_handler(event, context):
-    subnet_id = event.get("subnet_id", "subnet-default")
-    headers = {
-        "X-Siemens-Auth": "test",
-        "Content-Type": "application/json"
-    }
+    url = "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data"
+    
     payload = {
-        "subnet_id": subnet_id,
-        "full_name": "Anurag Dangi",
-        "email": "anurag@example.com"
+        "subnet_id": event["subnet_id"],
+        "full_name": event["full_name"],
+        "email": event["email"]
     }
-    response = requests.post("https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data", 
-                             headers=headers, json=payload)
+    
+    headers = {"X-Siemens-Auth": "test"}
+    
+    response = requests.post(url, json=payload, headers=headers)
     
     return {
         "statusCode": response.status_code,
-        "body": json.loads(response.text)
+        "body": response.text
     }
