@@ -6,8 +6,8 @@ def lambda_handler(event, context):
     
     payload = {
         "subnet_id": event["subnet_id"],
-        "full_name": event["full_name"],
-        "email": event["email"]
+        "full_name": event["Anurag Dangi"],
+        "email": event["anurag.suraj23@gmail.com"]
     }
     
     headers = {"X-Siemens-Auth": "test"}
