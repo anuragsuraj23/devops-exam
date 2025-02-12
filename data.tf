@@ -9,15 +9,3 @@ data "aws_vpc" "vpc" {
 data "aws_iam_role" "lambda" {
   name = "DevOps-Candidate-Lambda-Role"
 }
-
-data "aws_subnet" "private_subnet" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.vpc.id]
-  }
-
-  filter {
-    name   = "tag:Name"
-    values = ["*private*"]
-  }
-}
