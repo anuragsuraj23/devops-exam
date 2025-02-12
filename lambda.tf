@@ -1,14 +1,19 @@
-resource "aws_lambda_function" "my_lambda" {
-  function_name    = "trigger-api"
-  role            = data.aws_iam_role.lambda.arn
-  handler        = "lambda_function.lambda_handler"
-  runtime        = "python3.9"
-  timeout        = 10
+import json
+import requests
 
-  filename        = "lambda_function.zip"
-
-  vpc_config {
-    subnet_ids         = [aws_subnet.private.id]
-    security_group_ids = [aws_security_group.lambda_sg.id]
-  }
-}
+def lambda_handler(event, context):
+    api_url = "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data"
+    headers = {"X-Siemens-Auth": "test"}
+    
+    payload = {
+        "subnet_id": event.get("subnet_id"),
+        "full_name": "Anurag Dangi",
+        "email": "anurag.suraj@gmail.com"
+    }
+    
+    response = requests.post(api_url, json=payload, headers=headers)
+    
+    return {
+        "statusCode": response.status_code,
+        "body": response.json()
+    }
