@@ -2,33 +2,53 @@ pipeline {
     agent any
     environment {
         AWS_REGION = 'ap-south-1'
-        S3_BUCKET  = '467.devops.candidate.exam'
+        LAMBDA_FUNCTION_NAME = 'trigger-api-function'
     }
     stages {
-        stage("TF Init") {
+        stage("Checkout Code") {
             steps {
-                sh 'terraform init -backend-config="bucket=${S3_BUCKET}" -backend-config="region=${AWS_REGION}"'
+                git branch: 'main', url: 'https://github.com/anuragsuraj23/devops-exam.git'
             }
         }
-        stage("TF Validate") {
+        
+        stage("Package Lambda") {
             steps {
-                sh 'terraform validate'
+                sh '''
+                zip lambda_payload.zip lambda_function.py
+                '''
             }
         }
-        stage("TF Plan") {
+
+        stage("Terraform Init") {
             steps {
-                sh 'terraform plan'
+                sh '''
+                terraform init
+                '''
             }
         }
-        stage("TF Apply") {
+
+        stage("Terraform Apply") {
             steps {
-                sh 'terraform apply -auto-approve'
+                sh '''
+                terraform apply -auto-approve
+                '''
             }
         }
+
         stage("Invoke Lambda") {
             steps {
-                sh 'aws lambda invoke --function-name trigger-api-function response.json'
-                sh 'cat response.json'
+                script {
+                    def response = sh(script: '''
+                        aws lambda invoke \
+                            --function-name ${LAMBDA_FUNCTION_NAME} \
+                            --log-type Tail \
+                            --query 'LogResult' \
+                            --output text \
+                            response.json | base64 --decode
+                        ''', returnStdout: true).trim()
+
+                    echo "Lambda Response: ${response}"
+                }
             }
         }
     }
