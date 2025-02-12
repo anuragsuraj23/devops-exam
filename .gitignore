@@ -1,9 +1,13 @@
-# Ignore Terraform state files
-terraform.tfstate
-terraform.tfstate.backup
+# Terraform Files
+*.tfstate
+*.tfstate.backup
 .terraform/
 .terraform.lock.hcl
 
-# Ignore Lambda ZIP package
+# Python Files
+__pycache__/
+*.pyc
+*.pyo
+
+# Zip Files
 lambda_payload.zip
-response.json
