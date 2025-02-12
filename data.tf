@@ -3,7 +3,7 @@ data "aws_nat_gateway" "nat" {
 }
 
 data "aws_vpc" "vpc" {
-  id = "vpc-06b326e20d7db55f9"  # Replace with your VPC ID
+  id = "vpc-06b326e20d7db55f9"  
 }
 
 
