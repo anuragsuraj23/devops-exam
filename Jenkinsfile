@@ -3,68 +3,46 @@ pipeline {
 
     environment {
         AWS_REGION = "ap-south-1"
-        S3_BUCKET = "467.devops.candidate.exam"
-        API_URL = "https://bc1yy8dzsg.execute-api.eu-west-1.amazonaws.com/v1/data"
+        S3_BUCKET  = "467.devops.candidate.exam"
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/YOUR_GITHUB_REPO'
+                git 'https://github.com/yourusername/your-repo.git'
             }
         }
 
-        stage('Setup Terraform') {
+        stage('Terraform Init') {
             steps {
-                sh '''
-                terraform init -backend-config="bucket=${S3_BUCKET}" -backend-config="region=${AWS_REGION}"
-                terraform plan -out=tfplan
-                '''
+                sh 'terraform init -backend-config="bucket=${S3_BUCKET}" -backend-config="region=${AWS_REGION}"'
             }
         }
 
-        stage('Apply Terraform') {
+        stage('Terraform Plan') {
             steps {
-                sh 'terraform apply -auto-approve tfplan'
+                sh 'terraform plan'
             }
         }
 
-        stage('Prepare Lambda Deployment') {
+        stage('Terraform Apply') {
             steps {
-                sh '''
-                rm -f lambda_payload.zip
-                zip lambda_payload.zip lambda_function.py
-                '''
-            }
-        }
-
-        stage('Deploy Lambda Function') {
-            steps {
-                sh '''
-                aws lambda update-function-code --function-name my-lambda-function --zip-file fileb://lambda_payload.zip --region ${AWS_REGION}
-                '''
+                sh 'terraform apply -auto-approve'
             }
         }
 
         stage('Invoke Lambda') {
             steps {
                 script {
-                    def response = sh(
-                        script: '''
-                        aws lambda invoke --function-name my-lambda-function --payload '{"subnet_id": "subnet-1234abcd", "full_name": "Anurag Dangi", "email": "your.email@example.com"}' response.json --region ${AWS_REGION}
-                        cat response.json
-                        ''',
-                        returnStdout: true
-                    )
-                    echo "Lambda Response: ${response}"
+                    def subnet_id = sh(script: "terraform output -raw private_subnet_id", returnStdout: true).trim()
+                    sh """
+                    aws lambda invoke \
+                        --function-name MyLambdaFunction \
+                        --payload '{ "subnet_id": "${subnet_id}", "full_name": "Anurag Dangi", "email": "your-email@example.com" }' \
+                        response.json
+                    """
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            sh 'terraform destroy -auto-approve'
         }
     }
 }
