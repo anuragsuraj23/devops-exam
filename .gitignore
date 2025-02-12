@@ -1,4 +1,15 @@
-*.zip
-terraform.tfstate
-terraform.tfstate.backup
+# Terraform files
+*.tfstate
+*.tfstate.backup
 .terraform/
+.terraform.lock.hcl
+
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore sensitive files
+*.pem
+*.key
